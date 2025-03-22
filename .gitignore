@@ -1,0 +1,5 @@
+#Usando i .gitignore para ocultar arquivos e dados de risco
+
+node_modules
+
+.env
