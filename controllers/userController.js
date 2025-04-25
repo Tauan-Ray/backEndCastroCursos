@@ -1,7 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
-
+const { hash } = require('bcryptjs');
 const prisma = new PrismaClient();
-
 const jwt = require('jsonwebtoken');
 
 exports.viewUsers = async (req, res) => {
@@ -10,25 +9,40 @@ exports.viewUsers = async (req, res) => {
 }
 
 exports.registerUser = async (req, res) => {
+    const { name, email, password } = req.body
 
-    await prisma.user.create({
-        data: {
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password
+    if (!name || !password || !email) return res.status(400).json({message: "Send name, email and password!"})
+
+    if (!email.includes('@')) return res.status(400).json({ message: "Invalid email format." });
+
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email
         }
     })
 
-    res.send('Cadastro feito com sucesso!')
+    if (user) return res.status(409).json({message: "E-mail already exists."})
+
+    const passwordHash = await hash(password, 6)
+
+    const newUser = await prisma.user.create({
+        data: {
+            name,
+            email,
+            password: passwordHash
+        },
+        select: { id: true, name: true, email: true }
+    })
+
+    res.status(201).send({ message: 'Cadastro feito com sucesso!', user:  newUser})
 }
-
-
 
 exports.deleteUser = async (req, res) => {
 
     await prisma.user.delete({
         where: {
-            id: req.params.id 
+            id: req.params.id
         }
     })
 
