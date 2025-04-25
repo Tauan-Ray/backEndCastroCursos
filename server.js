@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(routes);
 
 
-app.listen(3000, () => {
+app.listen(3001, () => {
     console.log('Acessar http://localhost:3000');
     console.log('Servidor executando na porta 3000');
 })

@@ -8,24 +8,29 @@ exports.viewCourses = async (req, res) => {
 }
 
 exports.createCouse = async (req, res) => {
-    await prisma.course.create({
+    const { name, emailAccount, passwordAccount, describe, link, image } = req.body
+
+    if (!name || !emailAccount || !passwordAccount || !describe || !link) return res.status(400).json({ message: "Preencha todos os campos obrigatórios!" })
+
+    const newCourse = await prisma.course.create({
         data: {
-            name: req.body.name,
-            emailAccount: req.body.emailAccount,
-            passwordAccount: req.body.passwordAccount,
-            describe: req.body.describe,
-            link: req.body.link,
-            image: req.body.image
+            name,
+            emailAccount,
+            passwordAccount,
+            describe,
+            link,
+            image
         }
     })
-    res.send('Curso criado com sucesso!');
+    res.status(201).json({ message: "Curso criado com sucesso!", course: newCourse })
 }
 
 exports.deleteCourse = async (req, res) => {
+    const { id } = req.params
 
     await prisma.course.delete({
         where: {
-            id: req.params.id
+            id
         }
     })
 

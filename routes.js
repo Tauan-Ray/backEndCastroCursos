@@ -3,11 +3,12 @@ const route = express.Router();
 const userController = require('./controllers/userController');
 const coursePageController = require('./controllers/coursePageController');
 const loginController= require('./controllers/loginController')
+const { authenticateToken } = require('./middleware')
 
 
 
 //View users
-route.get('/', userController.viewUsers);
+route.get('/', authenticateToken, userController.viewUsers);
 
 
 //Register user
@@ -17,18 +18,18 @@ route.post('/', userController.registerUser);
 route.post('/login', loginController.loginUser);
 
 //Delete user
-route.delete('/:id', userController.deleteUser);
+route.delete('/:id', authenticateToken, userController.deleteUser);
 
 
 
 //View course
-route.get('/home', coursePageController.viewCourses);
+route.get('/home', authenticateToken, coursePageController.viewCourses);
 
 //Create course
-route.post('/home', coursePageController.createCouse);
+route.post('/home', authenticateToken, coursePageController.createCouse);
 
 //Delete couse
-route.delete('/home/:id', coursePageController.deleteCourse);
+route.delete('/home/:id', authenticateToken, coursePageController.deleteCourse);
 //Atualizar curso
 //route.put('/users/home:courseName', mainController.updateUserAdmin);
 //route.put('/users/updateClient/:index', mainController.updateUserClient);

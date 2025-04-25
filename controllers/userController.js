@@ -35,10 +35,18 @@ exports.registerUser = async (req, res) => {
         select: { id: true, name: true, email: true }
     })
 
-    res.status(201).send({ message: 'Cadastro feito com sucesso!', user:  newUser})
+    const token = jwt.sign({ id: newUser.id, email }, process.env.SECRET_KEY, { expiresIn: '2h' });
+
+    res.status(201).send({ message: 'Cadastro feito com sucesso!', user:  newUser, token: token})
 }
 
 exports.deleteUser = async (req, res) => {
+    const { id } = req.params
+    const user = req.user
+
+    if (user.id !== id) {
+        return res.status(401).send('Unauthorized')
+    }
 
     await prisma.user.delete({
         where: {
